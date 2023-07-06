@@ -3,13 +3,14 @@ import Webcam from "react-webcam";
 import DrawingCanvas from "./DrawingCanvas";
 const WebcamComponent = () => <Webcam />;
 const videoConstraints = {
-  width: 400,
-  height: 400,
+  width: 800,
+  height: 800,
   facingMode: "user",
 };
 function Profile() {
   const [picture, setPicture] = useState("");
   const webcamRef = React.useRef(null);
+  // galery of images
   let [savedGallery, setSavedGallery] = useState([]);
   let [imageIndex, setImageIndex] = useState(-1);
   let [isCanvasActive, setIsCanvasActive] = useState(false);
@@ -37,12 +38,12 @@ function Profile() {
   }
   function saveChanges(currentImage) {}
   return (
-    <div>
-      <h1 className=" relative z-50 text-center bg-blue-500 text-white text-5xl p-2">
-        Image Capturing
+    <div className="h-screen overflow-hidden">
+      <h1 className="bg-gray-200  text-center font-bold text-xl p-2 m-2">
+        Capturing Images
       </h1>
-      <div className="flex  h-full w-full">
-        <div className="w-60 h-screen flex flex-col bg-red-500 gap-4 p-4 overflow-y-auto fixed top-16">
+      <div className="flex ">
+        <div className="w-1/4 h-screen  bg-red-500 gap-4 p-4   ">
           {savedGallery.map((img, index) => {
             return (
               <div key={index}>
@@ -82,23 +83,15 @@ function Profile() {
             );
           })}
         </div>
-        <div className=" w-full absolute top-16 left-60 bg-green-500">
-          <div className="w-full z-50">
+        <div className="h-screen w-3/4 bg-green-500  overflow-auto ">
+          <div className="   w-full z-50">
             {isCanvasActive ? (
-              <div>
-                <DrawingCanvas
-                  image={savedGallery[imageIndex]}
-                  setSavedGallery={setSavedGallery}
-                  savedGallery={savedGallery}
-                  imgIdx={imageIndex}
-                />
-                <button
-                  onClick={() => saveChanges(savedGallery[imageIndex])}
-                  className="bg-blue-400 px-4 py-2 m-4 "
-                >
-                  Save Changes
-                </button>
-              </div>
+              <DrawingCanvas
+                image={savedGallery[imageIndex]}
+                setSavedGallery={setSavedGallery}
+                savedGallery={savedGallery}
+                imgIdx={imageIndex}
+              />
             ) : (
               ""
             )}
@@ -110,12 +103,14 @@ function Profile() {
                 className="h-96 p-4"
                 audio={false}
                 ref={webcamRef}
-                screenshotFormat="image/jpeg"
+                screenshotFormat="image/png"
+                // screenshotFormat="image/jpeg"
                 videoConstraints={videoConstraints}
               />
             ) : (
-              <div className="w-2/3 p-4"></div>
+              ""
             )}
+            {/* ( <div className="w-2/3 p-4"></div>) */}
             <div>
               {picture !== "" ? (
                 <div className="w-2/3 p-4">

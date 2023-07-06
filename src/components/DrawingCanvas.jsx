@@ -1,23 +1,40 @@
 import React, { useRef, useEffect } from "react";
 const DrawingCanvas = ({ image, setSavedGallery, imgIdx, savedGallery }) => {
   const canvasRef = useRef(null);
-  // const imageRef = useRef(null);
   let isDrawing = false;
   let context = null;
+  const drawingData = []; // Store drawing data
   useEffect(() => {
     const canvas = canvasRef.current;
     context = canvas.getContext("2d");
-    context.strokeStyle = "rgb(256,0,0)";
     context.lineJoin = "round";
-    context.lineWidth = 1;
-    const imageObj = new Image();
-    imageObj.onload = () => {
-      context.drawImage(imageObj, 0, 0, canvas.width, canvas.height);
+    const resizeCanvas = () => {
+      const { width, height } = canvas.getBoundingClientRect();
+      const dataUrl = canvas.toDataURL(); // Store the current drawing as an image
+      canvas.width = width;
+      canvas.height = height;
+      const imageObj = new Image();
+      imageObj.onload = () => {
+        context.clearRect(0, 0, width, height);
+        context.drawImage(imageObj, 0, 0, width, height);
+      };
+      imageObj.src = image;
     };
-    imageObj.src = image;
+    const redrawImage = () => {
+      drawingData.forEach((point) => {
+        const { x, y } = point;
+        context.lineTo(x, y);
+        context.stroke();
+      });
+    };
+    resizeCanvas();
+    redrawImage();
+    window.addEventListener("resize", resizeCanvas);
   }, [image]);
   const startDrawing = (e) => {
     isDrawing = true;
+    context.strokeStyle = "rgb(0, 0, 255)";
+    context.lineWidth = 10;
     context.beginPath();
     context.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
   };
@@ -37,11 +54,12 @@ const DrawingCanvas = ({ image, setSavedGallery, imgIdx, savedGallery }) => {
     setSavedGallery(updateEditingImg);
   };
   return (
-    <div>
+    <div className=" flex flex-col justify-center items-center">
       <canvas
         key={image}
-        height={400}
-        width={400}
+        className="aspect-auto w-[500px] h-[500px] "
+        // height={500}
+        // width={500}
         ref={canvasRef}
         onMouseDown={startDrawing}
         onMouseMove={continueDrawing}
